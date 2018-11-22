@@ -11,7 +11,7 @@ const app = express();
 const port = 3000;
 const users = require('./routes/users');
 const chat = require('./routes/chat');
-const socketEvents = require('./socketEvents');  
+const socketio = require('./socketio');  
 
 
 //MongoDB
@@ -52,7 +52,7 @@ server = app.listen(port, () => {
 //socket.io
 const io = require('socket.io').listen(server);
 
-socketEvents(io);  
+socketio(io);  
 
 //ROUTES
 
