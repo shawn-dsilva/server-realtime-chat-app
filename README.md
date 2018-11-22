@@ -1,4 +1,4 @@
-#server-realtime-chat-app
+# server-realtime-chat-app
 
 server backend for a realtime chat app using node,express,mongoDB and socket.io
 
