@@ -40,6 +40,9 @@ exports = module.exports = function (io) {
       console.log('User ' + message.user.username + ' ( ' + message.user.name + ',  id: ' + message.user._id + ' ) ' + 'has sent a message: ' + message.message );
       io.emit('message', {
         type: 'new-message',
+        user_id: message.user._id,
+        username: message.user.username,
+        name: message.user.name,
         text: message.message
       });
     });
