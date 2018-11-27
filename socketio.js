@@ -4,7 +4,9 @@ const conversation = require('./models/conversation');
 const message = require('./models/message');
 
 exports = module.exports = function (io) {
-  // Set socket.io listeners.
+
+// USER STATUS LOGS START
+
   io.on('connection', (socket) => {
     socket.on('userdata', (user) =>{
       socket.username = user.username;
@@ -17,10 +19,10 @@ exports = module.exports = function (io) {
       });
     });
 
+// USER STATUS LOGS END
     
+//  CHATROOM Routines start
 
-
-    // On conversation entry, join broadcast channel
     socket.on('enter conversation', (conversation) => {
       socket.join(conversation);
       console.log('joined ' + conversation);
@@ -35,6 +37,11 @@ exports = module.exports = function (io) {
       io.sockets.in(conversation).emit('refresh messages', conversation);
     });
 
+//  CHATROOM Routines end
+
+
+// DIRECT MESSAGE Routines start
+
     socket.on('message', (message) => {
       message = JSON.parse(message);
       console.log('User ' + message.user.username + ' ( ' + message.user.name + ',  id: ' + message.user._id + ' ) ' + 'has sent a message: ' + message.message );
@@ -46,11 +53,8 @@ exports = module.exports = function (io) {
         text: message.message
       });
     });
-
-
-
-
-
-
   });
+
+
+// DIRECT MESSAGE Routines end
 }

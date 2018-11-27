@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/database')
 const User = require('../models/user');
 
+AuthGuard = passport.authenticate('jwt', {session: false})
+
 //Register
 router.post('/register', (req, res, next) => {
     let newUser = new User({
@@ -62,11 +64,22 @@ router.post('/authenticate', (req, res, next) => {
 });
 
 //Profile
-router.get('/profile', passport.authenticate('jwt', {session:false}),(req, res, next) => {
+router.get('/profile', AuthGuard, (req, res, next) => {
     res.json({user: req.user});
 });
 
-AuthGuard = passport.authenticate('jwt', {session: false});
+
+router.get('/list', AuthGuard, (req,res) =>{
+    User.find({}, (err, users) => {
+        var userList = {};
+
+        users.forEach( (user) => {
+            userList[user.username] = user;
+        });
+        
+        res.send(userList);
+    })
+})
 
 module.exports = AuthGuard;
 module.exports = router;
