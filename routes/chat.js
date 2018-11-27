@@ -60,6 +60,31 @@ router.get('/:conversationId', passport.authenticate('jwt', {session:false}),(re
         });
 });
 
+
+//Checks to see if conversation containing two users is in db
+router.get('/find/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
+    
+    conversation.findOne({ participants: [req.user._id,req.params.recipient]})
+    .populate({
+        path: 'participants',
+        select: 'name username email'
+    })
+    .exec(function (err, conversations) {
+        if(conversations) {
+        res.status(200).json({ 
+        isPresent: true,
+        message: "Found the conversation! ",
+        conversationId : conversations._id, participants : conversations.participants });
+        } else {
+        res.status(200).json({ 
+        isPresent: false,
+        message: "CONVERSATION NOT FOUND ",
+        });
+    }
+    });
+});
+
+
 // start new Chat
 router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
     if (!req.params.recipient) {
@@ -71,6 +96,7 @@ router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (re
         res.status(422).send({ error: 'Please enter a message.' });
         return next();
     }
+
 
     const Aconversation = new conversation({
         participants: [req.user._id, req.params.recipient]
@@ -94,8 +120,9 @@ router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (re
                 return next(err);
             }
 
-            res.status(200).json({ message: 'Conversation started!', conversationId: conversation._id});
-            return next();
+
+      res.status(200).json({ message: 'Conversation started!', conversationId: newConversation._id});
+      return next();
         });
 
       });
@@ -120,5 +147,54 @@ router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (re
         });
 
     });
+
+
+
+
+    router.post('/from/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
+        let isPresent;
+        let foundChat;
+
+        function isPresentFunction( conversation, callback) {
+            conversation.findOne({ participants: [req.user._id,req.params.recipient]})
+            .populate({
+                path: 'participants',
+                select: 'name username email'
+            })
+            .exec(function (err, conversations) {
+            if(conversations === null) {
+                isPresent = false;
+            } else {
+                isPresent = true;
+                foundChat = conversations;    
+
+            }
+            console.log("isPresent value inside findOne " + isPresent);
+            /*res.status(200).json({ message: "Found the conversation! ",
+            conversationId : conversations._id, participants : conversations.participants });
+            return(next);*/
+            callback();
+            });
+        }
+        
+        
+        isPresentFunction(conversation, () => {
+            console.log("isPresent value outside findOne " + isPresent);
+
+            if(isPresent === true) {
+                console.log("Found the conversation ! ");
+                console.log(foundChat);
+                res.status(200).json({ message: "Found the conversation! ",
+                conversationId : foundChat._id, participants : foundChat.participants });
+                return(next);
+            }
+            else {
+                console.log(" NO CONVERSATION FOUND ! ");
+                res.status(404).json({ message: "NO CONVERSATION FOUND", });
+                return(next);
+            }
+        })
+     });
+
 
     module.exports = router;
