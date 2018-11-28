@@ -5,7 +5,9 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/database')
 const User = require('../models/user');
 
-AuthGuard = passport.authenticate('jwt', {session: false})
+AuthGuard = passport.authenticate('jwt', {
+    session: false
+})
 
 //Register
 router.post('/register', (req, res, next) => {
@@ -16,11 +18,17 @@ router.post('/register', (req, res, next) => {
         password: req.body.password
     });
 
-    User.addUser(newUser, (err)=> {
-        if(err){
-            res.json({success: false, msg:'Failed to register user'});
+    User.addUser(newUser, (err) => {
+        if (err) {
+            res.json({
+                success: false,
+                msg: 'Failed to register user'
+            });
         } else {
-            res.json({success: true, msg:'You are registered!'})
+            res.json({
+                success: true,
+                msg: 'You are registered!'
+            })
         }
 
 
@@ -32,23 +40,26 @@ router.post('/authenticate', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    User.getUserByUsername(username, (err,user) =>{
-        if(err) throw err;
-        if(!user) {
+    User.getUserByUsername(username, (err, user) => {
+        if (err) throw err;
+        if (!user) {
             console.log(user);
-            return res.json({success: false, msg: "User not found"});
+            return res.json({
+                success: false,
+                msg: "User not found"
+            });
         }
 
         User.comparePassword(password, user.password, (err, isMatch) => {
-            if(err) throw err;
-            if(isMatch){
+            if (err) throw err;
+            if (isMatch) {
                 const token = jwt.sign(user.toJSON(), config.secret, { //USER OBJECT TURNED TO JSON
                     expiresIn: 604800 //a week
                 });
 
                 res.json({
                     success: true,
-                    token: 'JWT '+token,
+                    token: 'JWT ' + token,
                     user: {
                         id: user._id,
                         name: user.name,
@@ -57,7 +68,10 @@ router.post('/authenticate', (req, res, next) => {
                     }
                 });
             } else {
-                return res.json({success: false, msg: "Wrong Password"});
+                return res.json({
+                    success: false,
+                    msg: "Wrong Password"
+                });
             }
         });
     });
@@ -65,18 +79,30 @@ router.post('/authenticate', (req, res, next) => {
 
 //Profile
 router.get('/profile', AuthGuard, (req, res, next) => {
-    res.json({user: req.user});
+    user = {
+        _id:req.user._id,
+        username: req.user.username,
+        name: req.user.name,
+        email: req.user.email
+    }
+    res.json({user});
 });
 
 
-router.get('/list', AuthGuard, (req,res) =>{
+router.get('/list', AuthGuard, (req, res) => {
     User.find({}, (err, users) => {
         var userList = {};
 
-        users.forEach( (user) => {
+        users.forEach((user) => {
+            user = {
+                _id:user._id,
+                username: user.username,
+                name: user.name,
+                email: user.email
+            }
             userList[user.username] = user;
         });
-        
+
         res.send(userList);
     })
 })

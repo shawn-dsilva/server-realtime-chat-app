@@ -72,30 +72,24 @@ router.get('/find/:recipient',passport.authenticate('jwt', {session:false}), (re
     .exec(function (err, conversations) {
         if(conversations) {
         res.status(200).json({ 
-        isPresent: true,
-        message: "Found the conversation! ",
-        conversationId : conversations._id, participants : conversations.participants });
+            isPresent: true,
+            message: "Found the conversation! ",
+            conversationId : conversations._id, participants : conversations.participants 
+            });
+            return next();
         } else {
         res.status(200).json({ 
         isPresent: false,
         message: "CONVERSATION NOT FOUND ",
         });
+        return next();
     }
     });
 });
 
 
 // start new Chat
-router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
-    if (!req.params.recipient) {
-        res.status(422).send({ error: 'Please choose a valid recipient for your message.' });
-        return next();
-    }
-
-    if (!req.body.composedMessage) {
-        res.status(422).send({ error: 'Please enter a message.' });
-        return next();
-    }
+router.get('/new/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
 
 
     const Aconversation = new conversation({
@@ -107,26 +101,11 @@ router.post('/new/:recipient',passport.authenticate('jwt', {session:false}), (re
             res.send({ error: err });
             return next(err);
         }
-
-        const Amessage = new message({
-            conversationId: newConversation._id,
-            body: req.body.composedMessage,
-            author: req.user._id
-        });
-
-        Amessage.save(function(err, newMessage) {
-            if(err) {
-                res.send({ error: err });
-                return next(err);
-            }
-
-
       res.status(200).json({ message: 'Conversation started!', conversationId: newConversation._id});
       return next();
         });
-
       });
-    });
+    //});
   
     //send reply
     router.post('/:conversationId',passport.authenticate('jwt', {session:false}), (req, res, next) => {
