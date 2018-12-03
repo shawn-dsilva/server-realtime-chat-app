@@ -64,7 +64,7 @@ router.get('/:conversationId', passport.authenticate('jwt', {session:false}),(re
 //Checks to see if conversation containing two users is in db
 router.get('/find/:recipient',passport.authenticate('jwt', {session:false}), (req, res, next) => {
     
-    conversation.findOne({ participants: [req.user._id,req.params.recipient]})
+    conversation.findOne({ participants: { $all: [req.user._id,req.params.recipient]}})
     .populate({
         path: 'participants',
         select: 'name username email'
