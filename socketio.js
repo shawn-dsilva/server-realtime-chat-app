@@ -7,7 +7,7 @@ exports = module.exports = function (io) {
 
 // USER STATUS LOGS START
 
-  io.on('connection', (socket) => {
+  io.sockets.on('connection', (socket) => {
     socket.on('userdata', (user) =>{
       socket.username = user.username;
       socket.name = user.name;
@@ -23,15 +23,15 @@ exports = module.exports = function (io) {
     
 //  CHATROOM Routines start
 
-    socket.on('enter conversation', (conversation) => {
-      socket.join(conversation);
-      console.log('joined ' + conversation);
+    socket.on('join', (data) => {
+      socket.join(data.room);
+      console.log('User ' + socket.username + ' ( ' + socket.name +  ', id: ' + socket._id + ' ) ' + ' has JOINED ROOM  ' + data.room);
     });
 
-    socket.on('leave conversation', (conversation) => {
-      socket.leave(conversation);
-      console.log('left ' + conversation);
-    })
+    socket.on('leave', (data) => {
+      socket.leave(data.room);
+      console.log('User ' + socket.username + ' ( ' + socket.name +  ', id: ' + socket._id + ' ) ' + ' has LEFT ROOM  ' + data.room);
+    });
 
     socket.on('new message', (conversation) => {
       io.sockets.in(conversation).emit('refresh messages', conversation);
