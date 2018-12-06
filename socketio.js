@@ -44,13 +44,14 @@ exports = module.exports = function (io) {
 
     socket.on('message', (message) => {
       message = JSON.parse(message);
-      console.log('User ' + message.user.username + ' ( ' + message.user.name + ',  id: ' + message.user._id + ' ) ' + 'has sent a message: ' + message.message );
+      console.log('User ' + message.username + ' ( ' + message.name + ',  id: ' + message.user_id + ' ) ' + 'has sent a message: ' + message.message );
       io.emit('message', {
         type: 'new-message',
-        user_id: message.user._id,
-        username: message.user.username,
-        name: message.user.name,
-        text: message.message
+        conversation_id: message.conversation_id,
+        user_id: message.user_id,
+        username: message.username,
+        name: message.name,
+        text: message.message,
       });
     });
   });
