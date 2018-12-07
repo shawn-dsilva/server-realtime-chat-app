@@ -1,18 +1,28 @@
-# server-realtime-chat-app
+# SERVER REALTIME CHAT APP
 
-server backend for a realtime chat app using node,express,mongoDB and socket.io
+server backend API for a realtime chat app using nodejs ,express, mongoDB and socket.io
 
 
 ## Requirements
 
-- NodeJs v8.x and npm
+- NodeJs v11.x and npm
 - MongoDB v3.x
 - Port 3000 should be free
 - (optional) Docker and `docker-compose`
+- Postman for REST API testing 
+
 ## Running this server
 
+- npm install to download `node_modules`
 ```
-npm install
-node app.js
+    npm install
+```
+- run the server directly
+```
+    node app.js
+```
+- or with `nodemon`
+```
+    nodemon
 ```
 
