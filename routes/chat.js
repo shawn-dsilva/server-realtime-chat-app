@@ -107,11 +107,16 @@ router.get('/new/:recipient',passport.authenticate('jwt', {session:false}), (req
       });
     //});
   
+
+
+
+
     //send reply
     router.post('/:conversationId',passport.authenticate('jwt', {session:false}), (req, res, next) => {
+        console.log(req.body);
         const reply = new message({
             conversationId: req.params.conversationId,
-            body: req.body.composedMessage,
+            body: req.body.text,
             author: req.user._id
         });
 
@@ -121,7 +126,7 @@ router.get('/new/:recipient',passport.authenticate('jwt', {session:false}), (req
                 return next(err);
             }
 
-            res.status(200).json({ message: 'Reply successfully sent! ', reply : req.body.composedMessage });
+            res.status(200).json({ message: 'Reply successfully sent! ', reply : req.body.text });
             return(next);
         });
 
