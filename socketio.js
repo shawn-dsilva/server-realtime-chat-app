@@ -49,14 +49,7 @@ exports = module.exports = function (io) {
     socket.on('message', (message) => {
       message = JSON.parse(message);
       console.log('User ' + message.username + ' ( ' + message.name + ',  id: ' + socket.id + ' ) ' + 'has sent a message: ' + message.message + ' in ROOM : ' + message.conversation_id );
-      io.sockets.in(message.conversation_id).emit('new message', {
-        type: 'new-message',
-        conversation_id: message.conversation_id,
-        user_id: message.user_id,
-        username: message.username,
-        name: message.name,
-        text: message.message,
-      });
+      io.sockets.in(message.conversation_id).emit('new message', message);
 
       io.in(message.conversation_id).clients((error, clients) => {
         if (error) throw error;
