@@ -48,7 +48,7 @@ router.get('/:conversationId', passport.authenticate('jwt', {session:false}),(re
         .sort('-createdAt')
         .populate({
             path: 'author',
-            select: 'name'
+            select: 'name username'
         })
         .exec(function (err, messages) {
             if (err) {
